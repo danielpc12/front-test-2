@@ -535,36 +535,48 @@ export default {
                } else{
                   result = "False"
                }
-            } if (operator == ">") {
+               console.log("<")
+               console.log(result)
+            } else if (operator == ">") {
                if(number1 > number2){
                   result = "True"
                }else{
                   result = "False"
                }
-            }if (operator == "!=") {
+               console.log(">")
+               console.log(result)
+            } else if (operator == "!=") {
                if(number1 != number2){
                   result = "True"
                }else{
                   result = "False"
                }
-            }if (operator == "==") {
+               console.log("!=")
+               console.log(result)
+            } else if (operator == "==") {
                if(number1 == number2){
                   result = "True"
                }else{
                   result = "False"
                }
-            }if (operator == "<=") {
+               console.log("==")
+               console.log(result)
+            } else if (operator == "<=") {
                if(number1 <= number2){
                   result = "True"
                }else{
                   result = "False"
                }
-            }if (operator == ">=") {
+               console.log("<=")
+               console.log(result)
+            } else if (operator == ">=") {
                if(number1 >= number2){
                   result = "True"
                }else{
                   result = "False"
                }
+               console.log(">=")
+               console.log(result)
             }
          }
          
@@ -803,7 +815,7 @@ export default {
          const code =directory.value.find(x=> x.uid ==event.target.value )
          const workspaceGenerator = JSON.parse(code.flow);
          editor.value.clear()
-         
+
          editor.value.on("nodeCreated", (id) => {
             const typeNode = editor.value.getNodeFromId(id).class;
             if (typeNode == "Number") {

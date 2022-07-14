@@ -12,8 +12,8 @@
         <option style="text-align: center;" value=">"> <h1> > </h1> </option>
         <option style="text-align: center;" value="=="> <h1>==</h1> </option>
         <option style="text-align: center;" value="!="> <h1>!=</h1> </option>
-        <option style="text-align: center;" value="<="> <h1>>=</h1> </option>
-        <option style="text-align: center;" value=">="> <h1> &lt;= </h1> </option>
+        <option style="text-align: center;" value=">="> <h1>>=</h1> </option>
+        <option style="text-align: center;" value="<="> <h1> &lt;= </h1> </option>
       
 
         </select>
