@@ -36,11 +36,12 @@ export default {
         const nodeId = ref(0);
         const result = ref('');
         let df = null;
-        const dataNode = ref({});
+        const dataNode = ref(0);
         df = getCurrentInstance().appContext.config.globalProperties.$df.value;
 
         const changeExpr = (e) => {
-             df.updateNodeDataFromId(nodeId.value,  {Expression1:expr1.value, Operator:operator.value, Expression2:expr2.value, Result: result.value});
+            const dataNode = df.getNodeFromId(nodeId.value);
+             df.updateNodeDataFromId(nodeId.value,  {Expression1:dataNode.data.Expression1, Operator:e.target.value, Expression2:dataNode.data.Expression2, Result: dataNode.data.Result});
         }
 
 
@@ -52,7 +53,7 @@ export default {
       });
 
 
-        return {changeExpr,expr1,expr2,operator, result};
+        return {changeExpr,expr1,expr2,operator, result, dataNode};
     }
 }
 </script>
