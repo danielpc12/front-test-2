@@ -234,6 +234,12 @@ export default {
       const allowDrop = (ev) => {
          ev.preventDefault();
       };
+      let mobile_item_selec = '';
+      let mobile_last_move = null;
+
+      function positionMobile(ev) {
+      mobile_last_move = ev;
+      }
 
       const addNodeToDrawFlow = (name, pos_x, pos_y) => {
          pos_x =
@@ -566,11 +572,20 @@ export default {
       };
 
       onMounted(() => {
+
+         var elements = document.getElementsByClassName('drag-drawflow');
+
+         for (var i = 0; i < elements.length; i++) {
+
+            elements[i].addEventListener('touchend', drop, false);
+            elements[i].addEventListener('touchmove', positionMobile, false);
+            elements[i].addEventListener('touchstart', drag, false );
+         }
+
          var id = document.getElementById("drawflow");
+         
          editor.value = new Drawflow(id, Vue, internalInstance.appContext.app._context);
          editor.value.start();
-
-         var prueba = editor.value.export()
          
 
          editor.value.on("nodeCreated", (id) => {
@@ -615,8 +630,6 @@ export default {
          editor.value.registerNode("If", <If />, {}, {});
          editor.value.registerNode("Else", <Else />, {}, {});
          editor.value.registerNode("Print", <Print />, {}, {});
-
-         editor.value.import(prueba)
          
       });
 
@@ -790,10 +803,7 @@ export default {
          const code =directory.value.find(x=> x.uid ==event.target.value )
          const workspaceGenerator = JSON.parse(code.flow);
          editor.value.clear()
-         const id = document.getElementById("drawflow");
-         editor.value = new Drawflow(id, Vue, internalInstance.appContext.app._context);
-         editor.value.start();
-
+         
          editor.value.on("nodeCreated", (id) => {
             const typeNode = editor.value.getNodeFromId(id).class;
             if (typeNode == "Number") {
