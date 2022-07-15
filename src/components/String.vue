@@ -1,7 +1,6 @@
 <template>
    <div ref="el">
       <h4>String</h4>
-      {{ $store.getters.getNumberbyId(nodeId) }}
       <input class="form-control" type="textarea" v-model="message" @change="updateSelect" placeholder="Ingresa un texto" df-number required />
    </div>
 </template>

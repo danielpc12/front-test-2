@@ -288,17 +288,14 @@ export default {
                editor.value.updateNodeDataFromId(data.input_id, object);
                dispatch("setOperationAction", {id: data.input_id, value: object});
             }
-
-            //console.log("Operaciones arimeticas validas");
+            
          } else if ((input.class == "Add" || input.class == "Sub" || input.class == "Multiply" || input.class == "Divide") && (output.class == "Assignation")) {
             if (data.input_class == "input_1") {
-               console.log(output)
                const result = evaluateExpressions(input.class, output.data.Value);
                const object = {Number1: output.data.Value, Number2: parseInt(input.data.Number2), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
                dispatch("setOperationAction", {id: data.input_id, value: object});
             } else if (data.input_class == "input_2") {
-               console.log(output)
                const result = evaluateExpressions(input.class, parseInt(input.data.Number1), parseInt(output.data.Value));
                const object = {Number1: parseInt(input.data.Number1), Number2: parseInt(output.data.Value), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
@@ -306,21 +303,19 @@ export default {
             }
 
          }else if ((input.class == "Add" || input.class == "Sub" || input.class == "Multiply" || input.class == "Divide") && (output.class == "If")) {
-            //----------------------------- Revisar las salidasdel if
             if (data.input_class == "input_1") {
                const result = evaluateExpressions(input.class, output.data.Expression1);
                const object = {Number1: output.data.Expression1, Number2: parseInt(input.data.Number2), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
                dispatch("setOperationAction", {id: data.input_id, value: object});
             } else if (data.input_class == "input_2") {
-               console.log(output)
                const result = evaluateExpressions(input.class, parseInt(input.data.Number1), parseInt(output.data.Expression1));
                const object = {Number1: parseInt(input.data.Number1), Number2: parseInt(output.data.Expression1), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
                dispatch("setOperationAction", {id: data.input_id, value: object});
             }
 
-         }else if ((input.class == "If") && (output.class == "Add" || output.class == "Sub" || output.class == "Multiply" || output.class == "Divide")) {
+         }else if (input.class == "If" && (output.class == "Add" || output.class == "Sub" || output.class == "Multiply" || output.class == "Divide")) {
             if (data.input_class == "input_1") {
                const result = evaluateExpressions(input.class, parseInt(output.data.Result), parseInt(input.data.Expression2), input.data.Operator);
                const object = {Expression1: output.data.Result, Operator: input.data.Operator, Expression2: parseInt(input.data.Expression2), Result: result};
@@ -332,17 +327,13 @@ export default {
                editor.value.updateNodeDataFromId(data.input_id, object);
             }
 
-         }else if ((input.class == "If") && (output.class == "Assignation")) {
+         }else if (input.class == "If"&& output.class == "Assignation") {
             if (data.input_class == "input_1") {
-               console.log("Operator 1")
-               console.log(input.data.Operator)
                const result = evaluateExpressions(input.class, parseInt(output.data.Value), parseInt(input.data.Expression2), input.data.Operator);
                const object = {Expression1: output.data.Value, Operator: input.data.Operator, Expression2: parseInt(input.data.Expression2), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
 
             } else if (data.input_class == "input_2") {
-               console.log("Operator 2")
-               console.log(input.data.Operator)
                const result = evaluateExpressions(input.class, parseInt(input.data.Expression1), parseInt(output.data.Value), input.data.Operator);
                const object = {Expression1: input.data.Expression1, Operator: input.data.Operator, Expression2: parseInt(output.data.Value), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
@@ -365,13 +356,12 @@ export default {
             }else if(input.class == "Assignation" && (output.class == "If")){
               editor.value.updateNodeDataFromId(input.id,{Value: output.data.Expression1, Name: input.data.Name});
 
-            }else if (data.input_class == "input_1" && input.class !="For"&& input.class !="Else"&& input.class !="Print") {
-               console.log('Entre')
+            }else if (data.input_class == "input_1" && input.class !="If" && input.class !="For"&& input.class !="Else"&& input.class !="Print") {
                const result = evaluateExpressions(input.class, parseInt(output.data.Number), parseInt(input.data.Number2));
                const object = {Number1: parseInt(output.data.Number), Number2: parseInt(input.data.Number2), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
                dispatch("setOperationAction", {id: data.input_id, value: object});
-            } else if (data.input_class == "input_2" && input.class !="For"&& input.class !="Else"&& input.class !="Print") {
+            } else if (data.input_class == "input_2" && input.class !="If" && input.class !="For"&& input.class !="Else"&& input.class !="Print") {
                const result = evaluateExpressions(input.class, parseInt(input.data.Number1), parseInt(output.data.Number));
                const object = {Number1: parseInt(input.data.Number1), Number2: parseInt(output.data.Number), Result: result};
                editor.value.updateNodeDataFromId(data.input_id, object);
@@ -389,15 +379,10 @@ export default {
                output_1: {connections},
             },
          } = input;
-            console.log("input")
-            console.log(input.class)
+
          if (connections.length == 1 && input.class == "Number") {
             const {node, output} = connections[0];
             const expression = editor.value.getNodeFromId(node);
-            console.log("input")
-            console.log(input) //Saca el nodo que le entra
-            console.log("actual")
-            console.log(expression.class) //Saca el nodo que le entra
             
             if(expression.class == "Add"|| expression.class == "Sub"|| expression.class == "Multiply"|| expression.class == "Divide"){
                if (output == "input_1") {
@@ -407,19 +392,62 @@ export default {
                   dispatch("setOperationAction", {id: node, value: object});
 
                   updateNodes(node);
+
+                  if (expression.outputs.output_1.connections.length > 0){
+                     console.log("if length")
+                     const assignOutput = expression.outputs.output_1.connections[0].output
+                     const inputOperation = editor.value.getNodeFromId(expression.outputs.output_1.connections[0].node);
+                     const operationId = inputOperation.id;
+                     if(inputOperation.class == "If"){
+                        if (assignOutput == "input_1") {
+                           const inputValue1 = editor.value.getNodeFromId(inputOperation.inputs.input_1.connections[0].node)
+                           const result = evaluateExpressions(inputOperation.class, parseInt(inputValue1.data.Result), parseInt(inputOperation.data.Expression2), inputOperation.data.Operator);
+                           const object = {Expression1: parseInt(inputValue1.data.Result), Operator: inputOperation.data.Operator, Expression2: parseInt(inputOperation.data.Expression2), Result: result};
+                           editor.value.updateNodeDataFromId(operationId, object);
+
+                        } else if (assignOutput == "input_2") {
+                           const inputValue2 = editor.value.getNodeFromId(inputOperation.inputs.input_2.connections[0].node)
+                           const result = evaluateExpressions(inputOperation.class, parseInt(inputOperation.data.Expression1), parseInt(inputValue2.data.Result), inputOperation.data.Operator);
+                           const object = {Expression1: parseInt(inputOperation.data.Expression1), Operator: inputOperation.data.Operator, Expression2: parseInt(inputValue2.data.Result), Result: result};
+                           editor.value.updateNodeDataFromId(operationId, object);
+                        }
+                     }
+                  }
+
                } else if (output == "input_2") {
                   const result = evaluateExpressions(expression.class, parseInt(expression.data.Number1), parseInt(input.data.number));
                   const object = {Number1: parseInt(expression.data.Number1), Number2: parseInt(input.data.number), Result: result};
                   editor.value.updateNodeDataFromId(node, object);
                   dispatch("setOperationAction", {id: node, value: object});
                   updateNodes(node);
+
+                  if (expression.outputs.output_1.connections.length > 0){
+                     const assignOutput = expression.outputs.output_1.connections[0].output
+                     const inputOperation = editor.value.getNodeFromId(expression.outputs.output_1.connections[0].node);
+                     const operationId = inputOperation.id;
+                     if(inputOperation.class == "If"){
+                        if (assignOutput == "input_1") {
+                           const inputValue1 = editor.value.getNodeFromId(inputOperation.inputs.input_1.connections[0].node)
+                           const outputValue1 = editor.value.getNodeFromId(inputOperation.id)
+                           const result = evaluateExpressions(inputOperation.class, parseInt(inputValue1.data.Result), parseInt(inputOperation.data.Expression2), inputOperation.data.Operator);
+                           const object = {Expression1: parseInt(inputValue1.data.Result), Operator: inputOperation.data.Operator, Expression2: parseInt(inputOperation.data.Expression2), Result: result};
+                           editor.value.updateNodeDataFromId(operationId, object);
+
+                        } else if (assignOutput == "input_2") {
+                           const inputValue2 = editor.value.getNodeFromId(inputOperation.inputs.input_2.connections[0].node)
+                           const result = evaluateExpressions(inputOperation.class, parseInt(inputOperation.data.Expression1), parseInt(inputValue2.data.Result), inputOperation.data.Operator);
+                           const object = {Expression1: parseInt(inputOperation.data.Expression1), Operator: inputOperation.data.Operator, Expression2: parseInt(inputValue2.data.Result), Result: result};
+                           editor.value.updateNodeDataFromId(operationId, object);
+                        }
+                     }
+                  }
                }
+
             } else if (expression.class == "Assignation"){
                const object = {Name: expression.data.Name, Value: parseInt(input.data.number)};
                editor.value.updateNodeDataFromId(node, object);
                
                if (expression.outputs.output_1.connections.length > 0){
-                  console.log("if length")
                   const assignOutput = expression.outputs.output_1.connections[0].output
                   const inputOperation = editor.value.getNodeFromId(expression.outputs.output_1.connections[0].node);
                   const operationId = inputOperation.id;
@@ -440,20 +468,49 @@ export default {
                         updateNodes(operationId);
                      }
                   } else if(inputOperation.class == "If"){
-                        if (assignOutput == "input_1") {
-                           const inputValue1 = editor.value.getNodeFromId(inputOperation.inputs.input_1.connections[0].node)
-                           const result = evaluateExpressions(inputOperation.class, parseInt(inputValue1.data.Value), parseInt(inputOperation.data.Expression2), inputOperation.data.Operator);
-                           const object = {Expression1: parseInt(inputValue1.data.Value), Operator: inputOperation.data.Operator, Expression2: parseInt(inputOperation.data.Expression2), Result: result};
-                           editor.value.updateNodeDataFromId(operationId, object);
-                        } else if (assignOutput == "input_2") {
-                           const inputValue2 = editor.value.getNodeFromId(inputOperation.inputs.input_2.connections[0].node)
-                           const result = evaluateExpressions(inputOperation.class, parseInt(inputOperation.data.Expression1), parseInt(inputValue2.data.Value), inputOperation.data.Operator);
-                           const object = {Expression1: parseInt(inputOperation.data.Expression1), Operator: inputOperation.data.Operator, Expression2: parseInt(inputValue2.data.Value), Result: result};
-                           console.log("resultado")
-                           console.log(inputOperation.class)
-                           editor.value.updateNodeDataFromId(operationId, object);
+                     if (assignOutput == "input_1") {
+                        const inputValue1 = editor.value.getNodeFromId(inputOperation.inputs.input_1.connections[0].node)
+                        const result = evaluateExpressions(inputOperation.class, parseInt(inputValue1.data.Value), parseInt(inputOperation.data.Expression2), inputOperation.data.Operator);
+                        const object = {Expression1: parseInt(inputValue1.data.Value), Operator: inputOperation.data.Operator, Expression2: parseInt(inputOperation.data.Expression2), Result: result};
+                        editor.value.updateNodeDataFromId(operationId, object);
+
+                        if (inputOperation.outputs.output_1.connections.length > 0){
+                           const conditionalOutput = inputOperation.outputs.output_1.connections[0].output
+                           const inputConditional = editor.value.getNodeFromId(inputOperation.outputs.output_1.connections[0].node);
+                           const conditionId = inputConditional.id;
+
+                           if (inputConditional.class == "Add" || inputConditional.class == "Sub" || inputConditional.class == "Multiply" || inputConditional.class == "Divide"){
+                              if (conditionalOutput == "input_1") {
+                                 const inputValue1 = editor.value.getNodeFromId(inputConditional.inputs.input_1.connections[0].node)
+                                 const result = evaluateExpressions(inputConditional.class, parseInt(inputValue1.data.Expression1), parseInt(inputConditional.data.Number2));
+                                 const object = {Number1: parseInt(inputValue1.data.Expression1), Number2: parseInt(inputConditional.data.Number2), Result: result};
+                                 editor.value.updateNodeDataFromId(conditionId, object);
+                                 dispatch("setOperationAction", {id: conditionId, value: object});
+                                 updateNodes(conditionId);
+                              } else if (conditionalOutput == "input_2") {
+                                 const inputValue2 = editor.value.getNodeFromId(inputConditional.inputs.input_2.connections[0].node)
+                                 const result = evaluateExpressions(inputConditional.class, parseInt(inputConditional.data.Number1), parseInt(inputValue2.data.Expression1));
+                                 const object = {Number1: parseInt(inputConditional.data.Number1), Number2: parseInt(inputValue2.data.Expression1), Result: result};
+                                 editor.value.updateNodeDataFromId(conditionId, object);
+                                 dispatch("setOperationAction", {id: conditionId, value: object});
+                                 updateNodes(conditionId);
+                              }
+                           } else if (inputConditional.class == "Assignation"){
+                              const inputValue1 = editor.value.getNodeFromId(inputConditional.inputs.input_1.connections[0].node)
+                              const object = {Name: inputConditional.data.Name, Value: parseInt(inputValue1.data.Expression1)};
+                              editor.value.updateNodeDataFromId(conditionId, object);
+                           }                            
+                        
                         }
+
+                     } else if (assignOutput == "input_2") {
+                        const inputValue2 = editor.value.getNodeFromId(inputOperation.inputs.input_2.connections[0].node)
+                        const result = evaluateExpressions(inputOperation.class, parseInt(inputOperation.data.Expression1), parseInt(inputValue2.data.Value), inputOperation.data.Operator);
+                        const object = {Expression1: parseInt(inputOperation.data.Expression1), Operator: inputOperation.data.Operator, Expression2: parseInt(inputValue2.data.Value), Result: result};
+                        editor.value.updateNodeDataFromId(operationId, object);
                      }
+
+                  }
                }
                
             } else if (expression.class == "If"){
@@ -463,8 +520,6 @@ export default {
                   editor.value.updateNodeDataFromId(node, object);
 
                   if (expression.outputs.output_1.connections.length > 0){
-                     console.log("if length")
-                     //--------------------------------------- Revisar Información de output del if-------------------------------
                      const assignOutput = expression.outputs.output_1.connections[0].output
                      const inputOperation = editor.value.getNodeFromId(expression.outputs.output_1.connections[0].node);
                      const operationId = inputOperation.id;
@@ -549,59 +604,42 @@ export default {
                result = 0;
             }
          } else if (expressionType == "If"){
-            console.log("Operador If")
-            console.log(number1)
-            console.log(number2)
-            //const operator = data.Operator
-            console.log(operator)
             if (operator == "<") {
                if(number1 < number2){
                   result = "True"
                } else{
                   result = "False"
                }
-               console.log("<")
-               console.log(result)
             } else if (operator == ">") {
                if(number1 > number2){
                   result = "True"
                }else{
                   result = "False"
                }
-               console.log(">")
-               console.log(result)
             } else if (operator == "!=") {
                if(number1 != number2){
                   result = "True"
                }else{
                   result = "False"
                }
-               console.log("!=")
-               console.log(result)
             } else if (operator == "==") {
                if(number1 == number2){
                   result = "True"
                }else{
                   result = "False"
                }
-               console.log("==")
-               console.log(result)
             } else if (operator == "<=") {
                if(number1 <= number2){
                   result = "True"
                }else{
                   result = "False"
                }
-               console.log("<=")
-               console.log(result)
             } else if (operator == ">=") {
                if(number1 >= number2){
                   result = "True"
                }else{
                   result = "False"
                }
-               console.log(">=")
-               console.log(result)
             }
          }
          
@@ -721,9 +759,27 @@ export default {
                code += "if "+ node.data.Expression1 +" "+  node.data.Operator+" " + node.data.Expression2 + ":\n";
                tabs = "\t";
             }else if(node.name == "Assignation"){
-               console.log(node.data)
-               code += node.data.Name + " = " + node.data.Value + "\n";
-               tabs = "";
+               const input = editor.value.getNodeFromId(node.inputs.input_1.connections[0].node)
+               if (input.class == "Add"){
+                  code += node.data.Name + " = " + input.data.Number1 + " + " + input.data.Number2 + "\n";
+                  tabs = "";
+               } else if (input.class == "Sub"){
+                  code += node.data.Name + " = " + input.data.Number1 + " - " + input.data.Number2 + "\n";
+                  tabs = "";
+               } else if (input.class == "Multiply"){
+                  code += node.data.Name + " = " + input.data.Number1 + " * " + input.data.Number2 + "\n";
+                  tabs = "";
+               } else if (input.class == "Divide"){
+                  code += node.data.Name + " = " + input.data.Number1 + " / " + input.data.Number2 + "\n";
+                  tabs = "";
+               } else if (input.class == "Number"){
+                  console.log(input)
+                  code += node.data.Name + " = " + input.data.Number + "\n";
+                  tabs = "";
+               } else if (input.class == "String"){
+                  code += node.data.Name + " = " + input.data.number + "\n";
+                  tabs = "";
+               }
             }
             let ifTabs = "";
             if(node.outputs.output_1.connections.length == 1){
@@ -731,7 +787,6 @@ export default {
                let tmp = 0;
               while(true){
                   let nodeActual =  editor.value.getNodeFromId(nodeId);
-                  console.log(nodeActual);
                if(nodeActual.name == "For"){
                   code += tabs+"for i "+ "in" + " range(" + nodeActual.data.Start + "," + nodeActual.data.Finish + "):\n";
                }else if(nodeActual.name == "If"){
@@ -754,7 +809,7 @@ export default {
                         nodeId = nodeActual.outputs.output_1.connections[0].node;
 
                        
-                  } else if(nodeActual.outputs.output_1.connections.length == 2){
+                  }  else if(nodeActual.outputs.output_1.connections.length == 2){
                      if(nodeActual.name =="If"){
                         flag = true;
                         nodeId = nodeActual.outputs.output_1.connections[0].node;
@@ -775,7 +830,6 @@ export default {
           
             }
             codeGenerator.value = code
-        // console.log(code);
 
       }
       const generatePythonCode = (e) => {
@@ -786,8 +840,6 @@ export default {
          const parentsArray = getParentsNodes(exportdata);
          const code = codex(parentsArray);
 
-         const lola = JSON.stringify(editor.value.export())
-         console.log(dataNodes);
        
          //const statements = 
 
@@ -801,8 +853,7 @@ export default {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ Code: [codeGenerator.value], flow: JSON.stringify(editor.value.export())})
          };
-         console.log(requestOptions.body)
-         //console.log(requestOptions.body)
+
          await fetch("http://localhost:9000/insertCode",requestOptions)
          Swal.fire({
             position: 'center',
@@ -819,7 +870,7 @@ export default {
          };
          const response = await fetch("http://localhost:9000/getAll",requestOptions);
          const data = await response.json();
-         console.log(data)
+
          directory.value = data.getAll;
          Swal.fire({
             position: 'center',
@@ -834,7 +885,7 @@ export default {
          const code =directory.value.find(x=> x.uid ==event.target.value )
          //console.log(code)
          codeGenerator.value = code.Code[0];
-         console.log(code.flow)
+
       }
       const loadNodes = (event)=>{
          const code =directory.value.find(x=> x.uid ==event.target.value )

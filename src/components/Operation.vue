@@ -1,7 +1,6 @@
 <template>
    <div>
       <h3 class="text-2xl">{{ title }}</h3>
-      <!-- Hola{{ count?.Number1 }} -->
       <input class="form-control" type="number" :value="operation?.Result" disabled />
       <span
          ><a>Number {{ operation?.Number1 }}</a></span

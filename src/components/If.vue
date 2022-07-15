@@ -4,9 +4,6 @@
         <h2 class="text-2xl">If-Else</h2>
         <span class="text-lg"><a>Condition</a></span>
 
-        <input  class="form-control" type="number" v-model="expr1" disabled/>
-
-
         <select class="form-select mt-3" aria-label="Default select example" v-model="operator" @change="changeExpr">
         <option selected style="text-align: center;" value="<"> <h1>  &lt; </h1> </option>
         <option style="text-align: center;" value=">"> <h1> > </h1> </option>
@@ -15,11 +12,7 @@
         <option style="text-align: center;" value=">="> <h1>>=</h1> </option>
         <option style="text-align: center;" value="<="> <h1> &lt;= </h1> </option>
       
-
         </select>
-        <input  class="form-control mt-3" type="number" v-model="expr2" disabled/>
-        <span class="text-lg"><a>Result</a></span>
-        <input  class="form-control mt-3" type="message" v-model="result" disabled/>
     </div>
 </template>
 
