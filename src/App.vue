@@ -744,12 +744,57 @@ export default {
          
          return array.filter((node) => isRoot(node,node.class)=== true && node.class !== "Number" && node.class !== "String" && node.class !== "Add" && node.class !== "Sub" && node.class !== "Multiply" && node.class !== "Divide" && node.class !=="Print");
       }
-      const codex = (array) =>{
+
+      function assignInputClass(input){
+         switch (input.class){
+                  case "Add":
+                     return input.data.Number1 + " + " + input.data.Number2 + "\n";
+                     
+                  case "Sub":
+                     return input.data.Number1 + " - " + input.data.Number2 + "\n";
+                     
+                  case "Multiply":
+                     return input.data.Number1 + " * " + input.data.Number2 + "\n";
+                  
+                  case "Divide":
+                     return input.data.Number1 + " / " + input.data.Number2 + "\n";
+                     
+                  case "Number":
+                     return input.data.Number + "\n";
+                     
+                  case "String":
+                     return input.data.number + "\n";
+                      
+         }
+      }
+
+      function assignActualNode(actualNode){
+         switch (actualNode.name){
+            case "For":
+               return tabs+"for i "+ "in" + " range(" + actualNode.data.Start + "," + actualNode.data.Finish + "):\n";
+               
+            case "If":
+               return tabs+"if "+ actualNode.data.Expression1 +" "+  actualNode.data.Operator+" " + actualNode.data.Expression2 + ":\n";
+               ifTabs = tabs; 
+
+            case "Assignation":
+               return tabs+actualNode.data.Name + " = " + actualNode.data.Value + "\n";                    
+
+            case "Print":
+               const valor  = editor.value.getNodeFromId(actualNode.inputs.input_1.connections[0].node); 
+               return tabs+"print("+valor.data.Name+")"+"\n";
+                        
+         }
+      }
+
+      const codex = (arrayNodes) =>{
          let code = "";
          let i = 0;
-         while(array.length > 0){
+         while(arrayNodes.length > 0){
+            console.log(arrayNodes)
             let flag = false;
-          const node = array.shift();
+            const node = arrayNodes.shift();
+            console.log(node)
           //console.log(node);
             let tabs = "";
             if(node.name == "For"){
@@ -760,75 +805,45 @@ export default {
                tabs = "\t";
             }else if(node.name == "Assignation"){
                const input = editor.value.getNodeFromId(node.inputs.input_1.connections[0].node)
-               if (input.class == "Add"){
-                  code += node.data.Name + " = " + input.data.Number1 + " + " + input.data.Number2 + "\n";
-                  tabs = "";
-               } else if (input.class == "Sub"){
-                  code += node.data.Name + " = " + input.data.Number1 + " - " + input.data.Number2 + "\n";
-                  tabs = "";
-               } else if (input.class == "Multiply"){
-                  code += node.data.Name + " = " + input.data.Number1 + " * " + input.data.Number2 + "\n";
-                  tabs = "";
-               } else if (input.class == "Divide"){
-                  code += node.data.Name + " = " + input.data.Number1 + " / " + input.data.Number2 + "\n";
-                  tabs = "";
-               } else if (input.class == "Number"){
-                  console.log(input)
-                  code += node.data.Name + " = " + input.data.Number + "\n";
-                  tabs = "";
-               } else if (input.class == "String"){
-                  code += node.data.Name + " = " + input.data.number + "\n";
-                  tabs = "";
-               }
+               code += node.data.Name + " = "
+               code += assignInputClass(input);
+               tabs = ""
             }
             let ifTabs = "";
-            if(node.outputs.output_1.connections.length == 1){
-               let nodeId = node.outputs.output_1.connections[0].node;
-               let tmp = 0;
-              while(true){
-                  let nodeActual =  editor.value.getNodeFromId(nodeId);
-               if(nodeActual.name == "For"){
-                  code += tabs+"for i "+ "in" + " range(" + nodeActual.data.Start + "," + nodeActual.data.Finish + "):\n";
-               }else if(nodeActual.name == "If"){
-                  code += tabs+"if "+ nodeActual.data.Expression1 +" "+  nodeActual.data.Operator+" " + nodeActual.data.Expression2 + ":\n";
-                  ifTabs = tabs;
-               }else if(nodeActual.name == "Assignation"){
-                  code += tabs+nodeActual.data.Name + " = " + nodeActual.data.Value + "\n";
-               }else if(nodeActual.name =="Else"){
-                  code += ifTabs+"else:"+"\n";
-               }else if(nodeActual.name == "Print"){
-                 const valor  = editor.value.getNodeFromId(nodeActual.inputs.input_1.connections[0].node); 
-                 code += tabs+"print("+valor.data.Name+")"+"\n";
-               }
-                 if(nodeActual.outputs.output_1.connections.length == 1){
-                        if(nodeActual.name == "For" || nodeActual.name =="If" ){
-                        tabs +="\t";
-                        }else{
-                           tabs += "";
-                        }
-                        nodeId = nodeActual.outputs.output_1.connections[0].node;
+            var isFirstOutput = true;
+            console.log(node)
+            for (const output in node.outputs) {
+               console.log(output)
+               const outputNode = node.outputs[output]
+               if(outputNode.connections.length == 1) {
+                  let nodeId = outputNode.connections[0].node;
+                  let tmp = 0;
+                  if(!isFirstOutput){
+                     code += "else:\n" 
+                  } 
+                  isFirstOutput= true
+                  while(true){
+                     let actualNode =  editor.value.getNodeFromId(nodeId);
+                     code += assignActualNode(actualNode)
+               
+                  if(actualNode.outputs.output_1.connections.length == 1){
+                           if(actualNode.name == "For" || actualNode.name =="If" ){
+                           tabs +="\t";
+                           }else{
+                              tabs += "";
+                           }
+                           nodeId = actualNode.outputs.output_1.connections[0].node;
 
-                       
-                  }  else if(nodeActual.outputs.output_1.connections.length == 2){
-                     if(nodeActual.name =="If"){
-                        flag = true;
-                        nodeId = nodeActual.outputs.output_1.connections[0].node;
-                        tmp = nodeActual.outputs.output_1.connections[1].node;
-                        tabs += "\t";
-                     }
-                    
-                  } else{
-                     if(flag){
-                        nodeId = tmp
-                        flag = false;
-                     }else{
-                        break;
-                     }
+                        
+                     }  
+
                   }
-            }
+               }
             }
           
-            }
+            
+          
+         }
             codeGenerator.value = code
 
       }
